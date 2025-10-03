@@ -1,13 +1,7 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Paperclip, Upload } from 'lucide-react';
-import { useState, useCallback, useRef, DragEvent, ChangeEvent, forwardRef, useImperativeHandle } from 'react';
-
-// You will likely want to define a type for your files
-interface CustomFile extends File {
-  id: string;
-  progress: number;
-}
+import { Upload } from 'lucide-react';
+import { useState, useRef, DragEvent, ChangeEvent, forwardRef, useImperativeHandle } from 'react';
 
 interface UploadBoxProps {
   onFilesSelect: (files: File[]) => void;

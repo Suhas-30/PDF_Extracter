@@ -1,5 +1,6 @@
 "use client";
 import { useSession, signOut, signIn } from "next-auth/react";
+import Image from "next/image";
 
 export default function Sidebar() {
   const { data: session } = useSession();
@@ -46,7 +47,7 @@ export default function Sidebar() {
       </div>
       <div className="flex items-center gap-2 mt-8">
         {session?.user?.image ? (
-          <img src={session.user.image} alt="User" className="w-8 h-8 rounded-full" />
+          <Image src={session.user.image} alt="User" width={32} height={32} className="w-8 h-8 rounded-full" />
         ) : (
           <span className="bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center font-bold text-gray-600">
             {session?.user?.name?.[0] || "U"}

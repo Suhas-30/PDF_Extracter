@@ -15,7 +15,7 @@ const EXTRACT_ENDPOINT = "/api/extract";
  * Type guard to check if an unknown value has an "error" property
  */
 function hasErrorProp(value: unknown): value is { error: string } {
-  return typeof value === "object" && value !== null && "error" in value && typeof (value as any).error === "string";
+  return typeof value === "object" && value !== null && "error" in value && typeof (value as Record<string, unknown>).error === "string";
 }
 
 export async function extractFilesWithModel(
@@ -49,10 +49,10 @@ export async function extractFilesWithModel(
           error: res.ok
             ? undefined
             : typeof payload === "string"
-            ? payload
-            : hasErrorProp(payload)
-            ? payload.error
-            : "Request failed",
+              ? payload
+              : hasErrorProp(payload)
+                ? payload.error
+                : "Request failed",
         });
       } catch (error: unknown) {
         results.push({
