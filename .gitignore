@@ -1,28 +1,21 @@
-# ==============
-# Frontend (Next.js)
-# ==============
-frontend/node_modules/
-frontend/.next/
-frontend/out/
-frontend/build/
-frontend/.vercel
-frontend/.env*
-frontend/next-env.d.ts
-frontend/*.tsbuildinfo
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+env/
+*.env
+*.egg-info/
 
-# ==============
-# Backend (Python / FastAPI)
-# ==============
-backend/venv/
-backend/__pycache__/
-backend/*.pyc
-backend/*.pyo
-backend/*.pyd
-backend/.env*
+# Node / Frontend
+node_modules/
+.next/
+dist/
+build/
+.env.local
 
-# ==============
-# Common
-# ==============
-*.log
+# IDE / OS files
+.vscode/
 .DS_Store
 Thumbs.db
