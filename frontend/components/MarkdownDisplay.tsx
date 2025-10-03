@@ -47,25 +47,23 @@ const MarkdownRenderer = ({ content, isComparison }: { content: string, isCompar
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
-                    // Custom renderer for code blocks - changed props to 'any' for TS compatibility
-                    code({ node, inline, className, children, ...props }: any) { 
+                    code({ inline, className, children, ...props }: { inline?: boolean; className?: string; children?: React.ReactNode }) { 
                         if (!inline) {
                             return <CodeBlock className={className}>{children}</CodeBlock>;
                         }
                         return <code className={className} {...props}>{children}</code>;
                     },
-                    // Custom renderer for tables (apply Tailwind styles)
-                    table: ({ children }: any) => ( // Using 'any' for children here too
+                    table: ({ children }: { children?: React.ReactNode }) => (
                         <div className="overflow-x-auto my-4">
                             <table className="w-full text-left border-collapse border border-gray-200 dark:border-gray-700">
                                 {children}
                             </table>
                         </div>
                     ),
-                    th: ({ children }: any) => (
+                    th: ({ children }: { children?: React.ReactNode }) => (
                         <th className="p-2 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 font-semibold">{children}</th>
                     ),
-                    td: ({ children }: any) => (
+                    td: ({ children }: { children?: React.ReactNode }) => (
                         <td className="p-2 border border-gray-200 dark:border-gray-700">{children}</td>
                     ),
                 }}

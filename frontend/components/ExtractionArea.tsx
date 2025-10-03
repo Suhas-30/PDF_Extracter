@@ -239,8 +239,8 @@ export default function ExtractionArea() {
                   if (!item) return <div className="text-sm text-gray-500">No result yet. Click Submit if not started.</div>;
                   if (!item.ok) return <div className="text-red-600 text-sm">{item.error || "Extraction failed"}</div>;
                   const data = item.data?.data || item.data;
-                  const allBlocks = (data?.content?.text_blocks || []) as any[];
-                  const filtered = allBlocks.filter((b: any) => (b?.page || 1) === currentPage);
+                  const allBlocks = (data?.content?.text_blocks || []) as Array<Record<string, unknown>>;
+                  const filtered = allBlocks.filter((b) => (typeof (b as Record<string, unknown>).page === 'number' ? (b as Record<string, number>).page : 1) === currentPage);
                   const totalPages = data?.metadata?.total_pages || 1;
                   return (
                     <div className="space-y-4">

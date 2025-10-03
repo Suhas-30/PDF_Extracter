@@ -9,8 +9,8 @@ export interface FileResult {
   };
   content: {
     lines: string[];
-    text_blocks?: any[];
-    tables?: any[];
+    text_blocks?: Array<{ [key: string]: unknown }>;
+    tables?: Array<{ [key: string]: unknown }>;
   };
 }
 

@@ -42,9 +42,10 @@ export async function POST(req: NextRequest) {
     }
     const t = await upstreamRes.text();
     return new NextResponse(t, { headers: { 'content-type': contentType || 'text/plain' } });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Extraction proxy failed';
     return NextResponse.json(
-      { error: error?.message || 'Extraction proxy failed' },
+      { error: message },
       { status: 500 }
     );
   }
