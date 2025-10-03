@@ -1,4 +1,4 @@
-import { PDFViewer } from "./PDFViewer";
+import PDFViewer from "./PDFViewer";
 import { ModelSelector } from "./ModelSelector";
 
 // Define a placeholder interface for the component props
