@@ -233,23 +233,36 @@ export default function ExtractionArea() {
 
                 {/* Decide current result from cache or submission list */}
                 {(() => {
+                  type ExtractionData = {
+                    model?: string;
+                    metadata?: { total_pages?: number; total_text_blocks?: number; total_tables?: number };
+                    content?: { text_blocks?: Array<Record<string, unknown>> };
+                  };
+
+                  function unwrapData(value: unknown): unknown {
+                    if (value && typeof value === "object" && "data" in value) {
+                      return (value as { data: unknown }).data;
+                    }
+                    return value;
+                  }
+
                   const file = selectedFiles[currentFileIndex];
                   const key = file ? `${selectedModel}::${file.name}` : undefined;
                   const item = key ? cache[key] : currentItem;
                   if (!item) return <div className="text-sm text-gray-500">No result yet. Click Submit if not started.</div>;
                   if (!item.ok) return <div className="text-red-600 text-sm">{item.error || "Extraction failed"}</div>;
-                  const data = item.data?.data || item.data;
-                  const allBlocks = (data?.content?.text_blocks || []) as Array<Record<string, unknown>>;
+                  const unwrapped = unwrapData(item.data) as ExtractionData | undefined;
+                  const allBlocks = (unwrapped?.content?.text_blocks || []) as Array<Record<string, unknown>>;
                   const filtered = allBlocks.filter((b) => (typeof (b as Record<string, unknown>).page === 'number' ? (b as Record<string, number>).page : 1) === currentPage);
-                  const totalPages = data?.metadata?.total_pages || 1;
+                  const totalPages = unwrapped?.metadata?.total_pages || 1;
                   return (
                     <div className="space-y-4">
                       <div className="text-sm text-gray-700">
                         <div className="mb-1">Pages: <span className="font-semibold">{totalPages}</span>
-                          {" "}| Text blocks: <span className="font-semibold">{data?.metadata?.total_text_blocks}</span>
-                          {" "}| Tables: <span className="font-semibold">{data?.metadata?.total_tables}</span>
+                          {" "}| Text blocks: <span className="font-semibold">{unwrapped?.metadata?.total_text_blocks}</span>
+                          {" "}| Tables: <span className="font-semibold">{unwrapped?.metadata?.total_tables}</span>
                         </div>
-                        <div className="text-xs text-gray-500">Model: {data?.model}</div>
+                        <div className="text-xs text-gray-500">Model: {unwrapped?.model}</div>
                       </div>
                       {/* Export buttons */}
                       <div className="flex gap-2">
