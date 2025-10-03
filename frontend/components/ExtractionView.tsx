@@ -1,13 +1,11 @@
-import { Separator } from "@/components/ui/separator";
-import { PDFViewer } from "./PDFViewer"; // Assuming you will implement this
-import { ModelSelector } from "./ModelSelector"; // Assuming you will implement this
-import { MarkdownDisplay } from "./MarkdownDisplay"; // Create this file next
+import { PDFViewer } from "./PDFViewer";
+import { ModelSelector } from "./ModelSelector";
 
 // Define a placeholder interface for the component props
 interface ExtractionViewProps {
   // We'll pass the file data and extraction results here
   pdfUrl: string | null;
-  extractedData: any; // Use a more specific type later
+  extractedData: unknown; // safer than any
   selectedModels: string[];
 }
 
@@ -58,7 +56,14 @@ export function ExtractionView({ pdfUrl, extractedData, selectedModels }: Extrac
           <h3 className="p-3 text-sm font-semibold border-b bg-muted/30">Original PDF View</h3>
           <div className="flex-grow overflow-auto">
             {/* TODO: Implement PDF rendering and annotation logic inside PDFViewer */}
-            <PDFViewer pdfUrl={pdfUrl} annotations={extractedData?.annotations} />
+            <PDFViewer
+              pdfUrl={pdfUrl}
+              annotations={
+                (extractedData && typeof extractedData === 'object' && 'annotations' in extractedData)
+                  ? (extractedData as { annotations?: unknown }).annotations
+                  : undefined
+              }
+            />
           </div>
         </div>
 

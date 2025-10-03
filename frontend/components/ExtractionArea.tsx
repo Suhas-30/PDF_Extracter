@@ -182,7 +182,7 @@ export default function ExtractionArea() {
                 <FileText className="w-12 h-12 text-gray-300 mb-4" />
                 <div className="text-lg text-gray-400 mb-2">No content extracted yet</div>
                 <div className="text-sm text-gray-400 mb-6 text-center">
-                  Upload files, choose a model, and click "Submit" to view extracted content here.
+                  Upload files, choose a model, and click &quot;Submit&quot; to view extracted content here.
                 </div>
                 <div className="flex flex-col gap-3 w-full items-center">
                   <button className="flex items-center gap-2 px-4 py-2 bg-white border rounded shadow hover:bg-gray-50">
