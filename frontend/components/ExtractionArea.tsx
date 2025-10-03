@@ -9,7 +9,7 @@ import { ModelSelector } from "./ModelSelector";
 import { extractFilesWithModel, type ExtractModel, type ExtractResponseItem } from "@/lib/api";
 import LayoutPreview from "./LayoutPreview";
 import PDFPreview from "./PDFPreview";
-import { blocksToPlainText } from "@/lib/utils";
+import { blocksToPlainText, type TextBlock } from "@/lib/utils";
 
 export default function ExtractionArea() {
   const { data: session } = useSession();
@@ -253,6 +253,19 @@ export default function ExtractionArea() {
                   if (!item.ok) return <div className="text-red-600 text-sm">{item.error || "Extraction failed"}</div>;
                   const unwrapped = unwrapData(item.data) as ExtractionData | undefined;
                   const allBlocks = (unwrapped?.content?.text_blocks || []) as Array<Record<string, unknown>>;
+                  const toTextBlocks = (blocks: Array<Record<string, unknown>>): TextBlock[] =>
+                    blocks.map((b) => ({
+                      page: typeof (b as Record<string, unknown>).page === "number" ? (b as Record<string, number>).page : 1,
+                      content:
+                        typeof (b as Record<string, unknown>).content === "string"
+                          ? ((b as Record<string, string>).content)
+                          : String((b as Record<string, unknown>).content ?? ""),
+                      bbox: undefined,
+                      reading_order:
+                        typeof (b as Record<string, unknown>).reading_order === "number"
+                          ? (b as Record<string, number>).reading_order
+                          : undefined,
+                    }));
                   const filtered = allBlocks.filter((b) => (typeof (b as Record<string, unknown>).page === 'number' ? (b as Record<string, number>).page : 1) === currentPage);
                   const totalPages = unwrapped?.metadata?.total_pages || 1;
                   return (
@@ -269,7 +282,7 @@ export default function ExtractionArea() {
                         <button
                           className="px-3 py-1 border rounded text-sm"
                           onClick={() => {
-                            const text = blocksToPlainText(allBlocks);
+                            const text = blocksToPlainText(toTextBlocks(allBlocks));
                             const blob = new Blob([text], { type: "text/plain" });
                             const url = URL.createObjectURL(blob);
                             const a = document.createElement("a");
@@ -288,7 +301,7 @@ export default function ExtractionArea() {
                           onClick={async () => {
                             const { jsPDF } = await import("jspdf");
                             const doc = new jsPDF({ unit: "pt", format: "a4" });
-                            const text = blocksToPlainText(allBlocks, "\n\n--- Page Break ---\n\n");
+                            const text = blocksToPlainText(toTextBlocks(allBlocks), "\n\n--- Page Break ---\n\n");
                             const margin = 40;
                             const maxWidth = doc.internal.pageSize.getWidth() - margin * 2;
                             const lines = doc.splitTextToSize(text, maxWidth);
