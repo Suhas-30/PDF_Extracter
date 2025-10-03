@@ -5,11 +5,18 @@ export interface ExtractResponseItem {
   model: ExtractModel;
   ok: boolean;
   status: number;
-  data?: unknown; // changed from any
+  data?: unknown; // safe type
   error?: string;
 }
 
 const EXTRACT_ENDPOINT = "/api/extract";
+
+/**
+ * Type guard to check if an unknown value has an "error" property
+ */
+function hasErrorProp(value: unknown): value is { error: string } {
+  return typeof value === "object" && value !== null && "error" in value && typeof (value as any).error === "string";
+}
 
 export async function extractFilesWithModel(
   files: File[],
@@ -43,7 +50,9 @@ export async function extractFilesWithModel(
             ? undefined
             : typeof payload === "string"
             ? payload
-            : (payload as any)?.error || "Request failed",
+            : hasErrorProp(payload)
+            ? payload.error
+            : "Request failed",
         });
       } catch (error: unknown) {
         results.push({
@@ -51,10 +60,7 @@ export async function extractFilesWithModel(
           model,
           ok: false,
           status: 0,
-          error:
-            error instanceof Error
-              ? error.message
-              : "Network error",
+          error: error instanceof Error ? error.message : "Network error",
         });
       }
     })
