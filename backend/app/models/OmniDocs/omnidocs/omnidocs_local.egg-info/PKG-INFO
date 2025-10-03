@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: omnidocs_local
+Version: 0.1
+Requires-Dist: paddleocr
+Requires-Dist: PyMuPDF
+Requires-Dist: camelot-py[cv]
+Requires-Dist: easyocr
+Dynamic: requires-dist

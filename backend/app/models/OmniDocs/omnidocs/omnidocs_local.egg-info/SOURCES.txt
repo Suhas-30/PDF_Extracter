@@ -1,0 +1,6 @@
+setup.py
+omnidocs_local.egg-info/PKG-INFO
+omnidocs_local.egg-info/SOURCES.txt
+omnidocs_local.egg-info/dependency_links.txt
+omnidocs_local.egg-info/requires.txt
+omnidocs_local.egg-info/top_level.txt

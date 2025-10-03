@@ -1,0 +1,4 @@
+paddleocr
+PyMuPDF
+camelot-py[cv]
+easyocr
