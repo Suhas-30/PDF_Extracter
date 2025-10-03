@@ -1,18 +1,15 @@
 "use client";
 import Sidebar from "./Sidebar";
-import { useSession } from "next-auth/react";
 import { useMemo, useRef, useState } from "react";
 import { UploadBox, type UploadBoxHandle } from "./UploadBox";
 import FileListAndSubmit from "./FileList";
 import { Settings, FileText, Upload } from "lucide-react";
-import { ModelSelector } from "./ModelSelector";
 import { extractFilesWithModel, type ExtractModel, type ExtractResponseItem } from "@/lib/api";
 import LayoutPreview from "./LayoutPreview";
 import PDFPreview from "./PDFPreview";
 import { blocksToPlainText, type TextBlock } from "@/lib/utils";
 
 export default function ExtractionArea() {
-  const { data: session } = useSession();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const uploadBoxRef = useRef<UploadBoxHandle | null>(null);
 
@@ -21,7 +18,7 @@ export default function ExtractionArea() {
     uploadBoxRef.current?.open?.();
   };
   const [uploading, setUploading] = useState(false);
-  const [showProgress, setShowProgress] = useState(false);
+  
   const [selectedModel, setSelectedModel] = useState<ExtractModel>("omnidocs");
   const [resultsHistory, setResultsHistory] = useState<{
     id: string;
@@ -123,7 +120,7 @@ export default function ExtractionArea() {
                     files={selectedFiles}
                     uploading={uploading}
                     onUploadingChange={setUploading}
-                    onShowProgressChange={setShowProgress}
+                    onShowProgressChange={() => {}}
                     onSubmit={handleSubmit}
                   />
                 </div>
@@ -266,8 +263,11 @@ export default function ExtractionArea() {
                           ? (b as Record<string, number>).reading_order
                           : undefined,
                     }));
-                  const filtered = allBlocks.filter((b) => (typeof (b as Record<string, unknown>).page === 'number' ? (b as Record<string, number>).page : 1) === currentPage);
+                  
                   const totalPages = unwrapped?.metadata?.total_pages || 1;
+                  const textBlocks = toTextBlocks(allBlocks);
+                  const filteredTextBlocks = textBlocks.filter(block => block.page === currentPage);
+                  
                   return (
                     <div className="space-y-4">
                       <div className="text-sm text-gray-700">
@@ -282,7 +282,7 @@ export default function ExtractionArea() {
                         <button
                           className="px-3 py-1 border rounded text-sm"
                           onClick={() => {
-                            const text = blocksToPlainText(toTextBlocks(allBlocks));
+                            const text = blocksToPlainText(textBlocks);
                             const blob = new Blob([text], { type: "text/plain" });
                             const url = URL.createObjectURL(blob);
                             const a = document.createElement("a");
@@ -301,7 +301,7 @@ export default function ExtractionArea() {
                           onClick={async () => {
                             const { jsPDF } = await import("jspdf");
                             const doc = new jsPDF({ unit: "pt", format: "a4" });
-                            const text = blocksToPlainText(toTextBlocks(allBlocks), "\n\n--- Page Break ---\n\n");
+                            const text = blocksToPlainText(textBlocks, "\n\n--- Page Break ---\n\n");
                             const margin = 40;
                             const maxWidth = doc.internal.pageSize.getWidth() - margin * 2;
                             const lines = doc.splitTextToSize(text, maxWidth);
@@ -329,7 +329,7 @@ export default function ExtractionArea() {
                           className="px-3 py-1 border rounded text-sm"
                           onClick={async () => {
                             const { Document, Packer, Paragraph, TextRun } = await import("docx");
-                            const text = blocksToPlainText(toTextBlocks(allBlocks), "\n\n");
+                            const text = blocksToPlainText(textBlocks, "\n\n");
                             const paragraphs = text.split("\n").map((line) => new Paragraph({ children: [new TextRun(line)] }));
                             const docx = new Document({ sections: [{ properties: {}, children: paragraphs }] });
                             const blob = await Packer.toBlob(docx);
@@ -355,7 +355,7 @@ export default function ExtractionArea() {
                       </div>
                       {/* Scrollable result canvas to prevent overflow */}
                       <div className="w-full max-w-full max-h-[70vh] overflow-y-auto overflow-x-hidden border rounded">
-                        <LayoutPreview textBlocks={filtered} fitToParent />
+                        
                       </div>
                     </div>
                   );
