@@ -329,7 +329,7 @@ export default function ExtractionArea() {
                           className="px-3 py-1 border rounded text-sm"
                           onClick={async () => {
                             const { Document, Packer, Paragraph, TextRun } = await import("docx");
-                            const text = blocksToPlainText(allBlocks, "\n\n");
+                            const text = blocksToPlainText(toTextBlocks(allBlocks), "\n\n");
                             const paragraphs = text.split("\n").map((line) => new Paragraph({ children: [new TextRun(line)] }));
                             const docx = new Document({ sections: [{ properties: {}, children: paragraphs }] });
                             const blob = await Packer.toBlob(docx);
